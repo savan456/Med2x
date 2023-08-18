@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet, TextInput, FlatList, Image, ScrollView, ImageBackground, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, TextInput, FlatList, Image, ScrollView, ImageBackground, TouchableOpacity, ActivityIndicator, StatusBar } from "react-native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Fonts from "../Assets/Fonts/fonts";
 import axios from "axios";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { Rating, AirbnbRating } from 'react-native-ratings';
+import Icon from "react-native-vector-icons/Ionicons"
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import SplashScreen from "react-native-splash-screen";
 
 
 const Home = (navigation) => {
@@ -160,11 +163,15 @@ const Home = (navigation) => {
     const [api, setapi] = useState("")
     const [Show, setShow] = useState(false)
     const [item1, setitem] = useState("")
+    const [res, setRes] = useState(false)
+    const [check, setcheck] = useState("")
 
     const Toggle = (item) => {
         setitem(item)
         setShow(!Show)
     }
+
+
 
     const HomeAPI = () => {
         axios.get("http://staging.webmynehost.com/hospital_demo/services/dashboard.php?format=json",
@@ -172,21 +179,43 @@ const Home = (navigation) => {
 
         )
             .then(function (response) {
-                console.log(response);
+            
                 setapi(response.data.response)
+                if (response) {
+                    setRes(true)
+                }
+                else {
+                    setRes(false)
+                }
 
             })
             .catch(function (error) {
-                console.log(error);
+        
             });
     }
 
     useEffect(() => {
+        check_id()
         HomeAPI()
     }, [])
 
     const props = navigation.navigation;
 
+    const check_id = async () => {
+
+        const value = await AsyncStorage.getItem('test')
+        
+        const value1 = JSON.parse(value)
+        
+
+        if (value1 == true) {
+            setcheck(value1)
+            props.navigate("Drawerr")
+        } else {
+            setcheck(false)
+            props.navigate("Login")
+        }
+    }
 
     const user = [
         {
@@ -227,6 +256,7 @@ const Home = (navigation) => {
 
     return (
         <View style={{ backgroundColor: "white" }}>
+            <StatusBar backgroundColor={"#4E95FF"} />
             {Show == true ? <Doctor_Profile /> : null}
             <ScrollView showsVerticalScrollIndicator={false}>
 
@@ -273,34 +303,45 @@ const Home = (navigation) => {
 
                     <View style={{ marginTop: hp('1.5'), marginBottom: hp("8%") }}>
 
-                        <FlatList
-                            // nestedScrollEnabled={true}
-                            data={api}
-                            renderItem={({ item }) => {
-                            
 
-                                return (
-
-
-                                    <TouchableOpacity style={styles.doctorlist} onPress={() => Toggle(item)}>
-
-                                        <ImageBackground
-                                            style={[styles.dimage, { marginTop: hp('1') }]}
-                                            source={images}
-                                            borderRadius={10}>
-                                            <View style={styles.mark}></View>
-                                        </ImageBackground>
-                                        <View style={{ marginLeft: wp('5'), marginTop: hp('2.5') }}>
-                                
-                                            <Text style={styles.title}>{item.SpecialityName != "" ? item.SpecialityName : "Speciality name is does not defined"}</Text>
-                                            <Text style={styles.name1}>{item.DoctorName != "" ? item.DoctorName : "Doctor name is dose not defined"}</Text>
-                                        </View>
+                        {res == false ?
+                            <View style={{ height: hp("45%"), backgroundColor: "white", alignItems: "center", justifyContent: "center" }}>
+                                <ActivityIndicator size={"large"} />
+                                <Text style={{ marginBottom: hp("15%"), marginLeft: wp("1.5%"), fontFamily: Fonts.Lato_Bold }}>Loading...</Text>
+                            </View> :
+                            <FlatList
+                                // nestedScrollEnabled={true}
+                                scrollEnabled={false}
+                                data={api}
+                                renderItem={({ item }) => {
 
 
-                                    </TouchableOpacity>
-                                )
-                            }}
-                        />
+                                    return (
+
+
+                                        <TouchableOpacity style={styles.doctorlist} onPress={() => Toggle(item)}>
+
+                                            <ImageBackground
+                                                style={[styles.dimage, { marginTop: hp('1') }]}
+                                                source={images}
+                                                borderRadius={10}>
+                                                <View style={styles.mark}></View>
+                                            </ImageBackground>
+                                            <View style={{ marginLeft: wp('5'), marginTop: hp('2.5') }}>
+
+                                                <Text style={styles.title}>{item.SpecialityName != "" ? item.SpecialityName : "none"}</Text>
+                                                <Text style={styles.name1}>{item.DoctorName != "" ? item.DoctorName : "Non"}</Text>
+                                            </View>
+                                            <View style={{ marginLeft: wp("25%"), marginTop: hp("3%") }}>
+                                                <Icon style={{ marginBottom: hp("1%") }} name="ellipse" size={10} color="#D3D3D3" />
+                                                <Icon name="ellipse" size={10} color="#D3D3D3" />
+                                            </View>
+
+
+                                        </TouchableOpacity>
+                                    )
+                                }}
+                            />}
 
                     </View>
                 </View>
@@ -387,18 +428,19 @@ const styles = StyleSheet.create({
         color: "#3A3A3A",
         fontSize: 13,
         fontFamily: Fonts.Lato_Regulaar,
-        textTransform:"capitalize"
+        textTransform: "capitalize"
     },
     name1: {
         color: "#3A3A3A",
+        width: wp("25%"),
         fontSize: 14,
         fontFamily: Fonts.Lato_Bold,
-        textTransform:"capitalize"
+        textTransform: "capitalize"
     },
     doctorlist: {
         flexDirection: "row",
         backgroundColor: "white",
-        elevation: 1,
+        elevation: 5,
         height: hp('10%'),
         width: wp('85%'),
         borderRadius: 10,
@@ -484,7 +526,7 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.Lato_Semibold,
         alignSelf: "center",
         marginTop: hp('1.5%'),
-        textTransform:"capitalize"
+        textTransform: "capitalize"
     },
 
     Erica: {
@@ -493,7 +535,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: Fonts.Lato_Semibold,
         marginTop: hp('0.5%'),
-        textTransform:"capitalize"
+        textTransform: "capitalize"
     },
 
     icon: {

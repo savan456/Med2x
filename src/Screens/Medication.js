@@ -50,33 +50,44 @@ const Medication = (navigation) => {
         {
             image: require('../Assets/Images/Message.png'),
             text: "Message",
+            root: "Message",
         },
 
         {
             image: require('../Assets/Images/Bell.png'),
             text: "Notification",
+            root: "",
         },
 
         {
             image: require('../Assets/Images/pills.png'),
             text: "Pills Reminder",
+            root: "",
         },
 
         {
             image: require('../Assets/Images/blogs.png'),
-            text: "Our Blogs"
+            text: "Our Blogs",
+            root: "",
         },
     ]
-    useEffect(() =>{
+    const touch = (item, index) => {
+
+        if (index == 0) {
+            navigation.navigation.navigate(item.root)
+        }
+
+    }
+    useEffect(() => {
         profile()
     })
     const [asy1, setasy] = useState("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png")
     const props = navigation.navigation;
-    
+
     const profile = async () => {
-       const asy = await AsyncStorage.getItem("uri")
-       console.log(asy)
-       setasy(asy)
+        const asy = await AsyncStorage.getItem("uri")
+    
+        setasy(asy)
     }
 
     return (
@@ -90,7 +101,7 @@ const Medication = (navigation) => {
                 </TouchableOpacity>
 
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Image style={styles.photo} source={{uri:asy1}} />
+                    <Image style={styles.photo} source={{ uri: asy1 }} />
                     <Text style={styles.smith} >Smith Johnson </Text>
                     <Text style={styles.years}>{'\n'}33 Years {'\n'}British Colombia, CA</Text>
 
@@ -123,8 +134,8 @@ const Medication = (navigation) => {
                     // horizontal
                     numColumns={'2'}
                     data={Secound}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity style={styles.bgwhite}>
+                    renderItem={({ item, index }) => (
+                        <TouchableOpacity style={styles.bgwhite} onPress={() => touch(item, index)}>
                             <View style={{ alignItems: "center", justifyContent: "center" }}>
                                 <Image style={styles.item} source={item.image} />
                                 <Text style={styles.text}>{item.text}</Text>
@@ -160,7 +171,7 @@ const styles = StyleSheet.create({
         resizeMode: "contain",
         marginLeft: wp('4%'),
         marginTop: hp('1%'),
-        borderRadius:40
+        borderRadius: 40
     },
 
     smith: {

@@ -137,7 +137,6 @@ const Appoiment = (navigation) => {
                         // onFocus={()=> setIsFocus(true)}
                         onChange={item => {
                             setValue(item.lable)
-                            console.log("Month name",item.lable)
                             setIsFocus(false);
                         }}
                         containerStyle={{ width: wp("32%") }}

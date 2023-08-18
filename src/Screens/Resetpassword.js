@@ -30,7 +30,7 @@ const Reset = (navigation) => {
 
     const ResetAPI = async () => {
         const email = await AsyncStorage.getItem('emailid')
-        console.log(email)
+        
         var formData = new FormData();
         formData.append("email", email);
         formData.append("old_password", Old);
@@ -43,11 +43,11 @@ const Reset = (navigation) => {
                     'Content-Type': 'multipart/form-data'
                 }
             }).then(function (response) {
-                console.log("change password", response)
+                
             }).catch(function (error) {
-                console.log(error)
+                
             })
-        console.log("old", Old, "new", New, "confirm", Confirm)
+
     }
 
 

@@ -4,12 +4,18 @@ import axios from "axios";
 import Fonts from "../Assets/Fonts/fonts";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AsyncStorage from "@react-native-async-storage/async-storage"
+// import SplashScreen from "react-native-splash-screen";
+import PushNotification from "react-native-push-notification";
+
 
 const Login = (navigation) => {
 
     useEffect(() => {
-        get_id();
-    })
+        // check_id()
+        // SplashScreen.hide();
+        // get_id();
+        createChannels();
+    }, [])
 
     const [userName, setuserName] = useState("")
     const [Password, setPassword] = useState("")
@@ -18,10 +24,29 @@ const Login = (navigation) => {
     const [passworderror, setpassworderror] = useState("")
 
     const [Show, setShow] = useState(true)
-    const [userid, setUser] = useState("")
+    // const [userid, setUser] = useState("")
+
+    const [check, setcheck] = useState("")
 
     const props = navigation.navigation;
 
+    const check_id = async () => {
+
+        const value = await AsyncStorage.getItem('test')
+        
+        const value1 = JSON.parse(value)
+    
+
+        if (value1 == true) {
+            setcheck(value1)
+            alert("if " + value1)
+            props.navigate("Drawerr")
+        } else {
+            setcheck(false)
+            alert("else " + check)
+            props.navigate("Login")
+        }
+    }
 
     const Validation = () => {
 
@@ -39,13 +64,43 @@ const Login = (navigation) => {
         if (userName !== "" && Password !== "") {
 
             loginAPI()
+            notification()
         }
 
 
     }
 
-    const loginAPI = () => {
+    const createChannels = () => {
+        PushNotification.createChannel(
+            {
+                channelId: "Login",
+                channelName: "Login channel"
+            },
         
+        )
+    };
+
+    const notification = async () => {
+        
+        PushNotification.checkPermissions((check) => console.log('checkk', check))
+        PushNotification.localNotification({
+            channelId: "Login",
+            title: "Login",
+            message: "Login successfully",
+        })
+        return PushNotification.requestPermissions()
+
+
+    };
+
+    const get_user = async () => {
+        const id = true;
+    
+        await AsyncStorage.setItem('test', JSON.stringify(id))
+    }
+
+    const loginAPI = () => {
+
         axios.get("http://staging.webmynehost.com/hospital_demo/services/login.php",
             {
                 params: {
@@ -55,12 +110,13 @@ const Login = (navigation) => {
             }
         )
             .then(async function (response) {
-                console.log(response.config.params);
-                setUser(response.data.did)
-                await AsyncStorage.setItem("email" , response.config.params.uname)
+                
+                // setUser(response.data.did)
+                await AsyncStorage.setItem('id', response.data.did)
+                await AsyncStorage.setItem("email", response.config.params.uname)
                 await AsyncStorage.setItem("pwd", response.config.params.pwd)
                 if (response.data.code == "Login successfully") {
-                    // alert(response.data.code)
+                    get_user()
                     props.navigate("Drawerr")
                 }
                 else {
@@ -69,13 +125,11 @@ const Login = (navigation) => {
 
             })
             .catch(function (error) {
-                console.log(error);
-            });
+                
+            })
     }
 
-    const get_id = async() => {
-        await AsyncStorage.setItem('id' , userid)
-    }
+
 
     return (
         <View>

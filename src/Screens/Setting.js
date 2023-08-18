@@ -6,6 +6,8 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import axios from "axios";
 import { CommonActions } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import PushNotification from "react-native-push-notification";
+
 
 
 const Setting = (navigation) => {
@@ -80,12 +82,23 @@ const Setting = (navigation) => {
 
 
         if (index == 7) {
-            logout1(item)
-            navigation.navigation.dispatch(CommonActions.reset({ routes: [{ name: item.root }] }))
+            logout1()
+            notification()
+            // navigation.navigation.dispatch(CommonActions.reset({ routes: [{ name: item.root }] }))
         }
 
 
     }
+
+    const notification = () => {
+
+        PushNotification.localNotification({
+            channelId: "Login",
+            title: "Logout",
+            message: "Logout successfully",
+        })
+
+    };
     const logout1 = async () => {
 
         const password = await AsyncStorage.getItem('pwd')
@@ -102,13 +115,20 @@ const Setting = (navigation) => {
                 }
             }
         )
-            .then(function (response) {
-                alert(response.data.ResponseMsg)
-                console.log(response);
+            .then(async function (response) {
+                // alert(response.data.ResponseMsg)
                 
+                navigation.navigation.dispatch(CommonActions.reset({
+                    routes: [{
+                        name: "Login"
+                    }]
+                }))
+                await AsyncStorage.clear()
+
+
             })
             .catch(function (error) {
-                console.log(error);
+                
             });
     }
 

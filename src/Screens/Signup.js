@@ -68,7 +68,7 @@ const Signup = (navigation) => {
         )
 
             .then(function (response) {
-                console.log(response);
+                
                 if (response.data.ResponseCode == "1") {
                     // alert(response.data.ResponseMsg)
                     props.navigate("Login")
@@ -79,7 +79,7 @@ const Signup = (navigation) => {
                 }
             })
             .catch(function (error) {
-                console.log(error);
+                
             });
     }
 

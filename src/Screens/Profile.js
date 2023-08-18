@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, TextInput, Image, ImageBackground, TouchableOpacity, Modal, ScrollView, KeyboardAvoidingView } from "react-native";
+import { Text, View, StyleSheet, TextInput, Image, ImageBackground, TouchableOpacity, Modal, ScrollView, ActivityIndicator } from "react-native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Fonts from "../Assets/Fonts/fonts";
 import ImagePicker from 'react-native-image-crop-picker';
@@ -15,7 +15,7 @@ const Profile = (navigation) => {
     const [item, setitem] = useState("")
     const [edit, setedit] = useState(false)
 
-    
+
 
 
     useEffect(() => {
@@ -24,6 +24,7 @@ const Profile = (navigation) => {
 
     async function ProfileAPI() {
         const id = await AsyncStorage.getItem('id')
+
         axios.get('http://staging.webmynehost.com/hospital_demo/services/getProfile.php', {
             params: {
                 profileId: id
@@ -32,14 +33,14 @@ const Profile = (navigation) => {
         })
             .then(async function (response) {
                 setitem(response.data.ResponseData)
-                console.log(response.data.ResponseData.email);
+                
                 await AsyncStorage.setItem('emailid', response.data.ResponseData.email)
             })
             .catch(function (error) {
-                console.log(error);
+                
             });
     }
-    console.log(item)
+    
 
     const Toggle = () => {
         setedit(!edit)
@@ -55,7 +56,7 @@ const Profile = (navigation) => {
             height: 400,
             cropping: true
         }).then(async image => {
-            console.log(image);
+            
             setimage(image.path)
             await AsyncStorage.setItem("uri", image.path)
             setVisibleModal(false)
@@ -68,7 +69,7 @@ const Profile = (navigation) => {
             height: 400,
             cropping: true,
         }).then(async image => {
-            console.log(image);
+            
             setimage(image.path)
             await AsyncStorage.setItem("uri", image.path)
             setVisibleModal(false)
@@ -83,7 +84,7 @@ const Profile = (navigation) => {
 
     const editAPI = () => {
         var formdata = new FormData();
-        console.log(name, age, address, mobile, email)
+        
         formdata.append("name", name);
         formdata.append("age", age);
         formdata.append("address", address);
@@ -102,129 +103,129 @@ const Profile = (navigation) => {
             }
         }
         ).then(function (response) {
-            console.log(response)
+            
         }).catch(function (error) {
-            console.log(error)
+        
         })
     }
 
 
     return (
         <ScrollView automaticallyAdjustKeyboardInsets>
+            {item ?
+                <View style={{ backgroundColor: "white", height: hp("100%") }}>
 
-            <View style={{ backgroundColor: "white", height: hp("100%") }}>
+                    <View style={styles.Header}>
 
-                <View style={styles.Header}>
+                        {edit == true ? <AntDesign style={{ marginLeft: wp("4") }} name="close" onPress={() => Toggle()} size={30} color="#FFFFFF" /> :
 
-                    {edit == true ? <AntDesign style={{ marginLeft: wp("4") }} name="close" onPress={() => Toggle()} size={30} color="#FFFFFF" /> :
+                            <TouchableOpacity onPress={() => navigation.navigation.dispatch(
+                                CommonActions.reset({
+                                    routes: [{
+                                        name: "Setting",
 
-                        <TouchableOpacity onPress={() => navigation.navigation.dispatch(
-                            CommonActions.reset({
-                                routes: [{
-                                    name:"Setting",
-                                    
-                                }]
-                            })
-                        )}>
-                            <AntDesign style={{ marginLeft: wp('4') }} name="arrowleft" size={30} color="#FFFFFF" />
-                        </TouchableOpacity>}
+                                    }]
+                                })
+                            )}>
+                                <AntDesign style={{ marginLeft: wp('4') }} name="arrowleft" size={30} color="#FFFFFF" />
+                            </TouchableOpacity>}
 
-                    <Text style={{ color: "white", fontFamily: Fonts.Lato_Semibold, fontSize: 18, marginRight: wp('60') }}>Profle</Text>
+                        <Text style={{ color: "white", fontFamily: Fonts.Lato_Semibold, fontSize: 18, marginRight: wp('60') }}>Profle</Text>
 
-                    {edit == true ? <Feather style={{ marginRight: wp('4') }} onPress={() => {
-                        Toggle()
-                        editAPI()
-                    }} name="check" size={25} color="#FFFFFF" /> :
-                        <Feather style={{ marginRight: wp('4') }} onPress={() => Toggle()} name="edit" size={25} color="#FFFFFF" />
-                    }
-                </View>
-
-                <View style={styles.bgBlue}>
-
-
-
-                    <View style={styles.photo}>
-                        <ImageBackground style={{ height: hp('15'), width: wp('30'), }} borderRadius={20} source={{ uri: Image1 }}></ImageBackground>
-                        <TouchableOpacity style={styles.icon} onPress={() => setVisibleModal(true)}>
-                            <Image style={styles.camera} source={require("../Assets/Images/camera.png")}></Image>
-                        </TouchableOpacity>
+                        {edit == true ? <Feather style={{ marginRight: wp('4') }} onPress={() => {
+                            Toggle()
+                            editAPI()
+                        }} name="check" size={25} color="#FFFFFF" /> :
+                            <Feather style={{ marginRight: wp('4') }} onPress={() => Toggle()} name="edit" size={25} color="#FFFFFF" />
+                        }
                     </View>
 
-                    <View style={styles.bgWhite}>
+                    <View style={styles.bgBlue}>
 
-                        <View style={{ marginTop: hp('7') }}>
 
-                            <Text style={styles.title}>Name</Text>
-                            <TextInput style={styles.TextInput}
-                                editable={edit}
-                                onChangeText={(Text) => setname(Text)}
-                                placeholder="User name"
-                                placeholderTextColor={"#4E95FF"}>{item.name}</TextInput>
 
-                            <Text style={styles.title}>Email</Text>
-                            <TextInput style={styles.TextInput}
-                                editable={edit}
-                                onChangeText={(Text) => setemail(Text)}
-                                placeholder="Email"
-                                placeholderTextColor={"#4E95FF"}>{item.email}</TextInput>
+                        <View style={styles.photo}>
+                            <ImageBackground style={{ height: hp('15'), width: wp('30'), }} borderRadius={20} source={{ uri: Image1 }}></ImageBackground>
+                            <TouchableOpacity style={styles.icon} onPress={() => setVisibleModal(true)}>
+                                <Image style={styles.camera} source={require("../Assets/Images/camera.png")}></Image>
+                            </TouchableOpacity>
+                        </View>
 
-                            <Text style={styles.title}>Mobile Number</Text>
-                            <TextInput style={styles.TextInput}
-                                editable={edit}
-                                onChangeText={(Text) => setmobile(Text)}
-                                placeholder="Mobile Number"
-                                placeholderTextColor={"#4E95FF"}>{item.mobile}</TextInput>
+                        <View style={styles.bgWhite}>
 
-                            <Text style={styles.title}>Age</Text>
-                            <TextInput style={styles.TextInput}
-                                editable={edit}
-                                onChangeText={(Text) => setage(Text)}
-                                placeholder="Age"
-                                placeholderTextColor={"#4E95FF"}>{item.age}</TextInput>
+                            <View style={{ marginTop: hp('7') }}>
 
-                            <Text style={styles.title}>Address</Text>
-                            <TextInput style={styles.TextInput}
-                                editable={edit} onChangeText={(Text) => setaddress(Text)}
-                                placeholder="Address"
-                                placeholderTextColor={"#4E95FF"}>{item.address}</TextInput>
+                                <Text style={styles.title}>Name</Text>
+                                <TextInput style={styles.TextInput}
+                                    editable={edit}
+                                    onChangeText={(Text) => setname(Text)}
+                                    placeholder="User name"
+                                    placeholderTextColor={"#4E95FF"}>{item.name}</TextInput>
+
+                                <Text style={styles.title}>Email</Text>
+                                <TextInput style={styles.TextInput}
+                                    editable={edit}
+                                    onChangeText={(Text) => setemail(Text)}
+                                    placeholder="Email"
+                                    placeholderTextColor={"#4E95FF"}>{item.email}</TextInput>
+
+                                <Text style={styles.title}>Mobile Number</Text>
+                                <TextInput style={styles.TextInput}
+                                    editable={edit}
+                                    onChangeText={(Text) => setmobile(Text)}
+                                    placeholder="Mobile Number"
+                                    placeholderTextColor={"#4E95FF"}>{item.mobile}</TextInput>
+
+                                <Text style={styles.title}>Age</Text>
+                                <TextInput style={styles.TextInput}
+                                    editable={edit}
+                                    onChangeText={(Text) => setage(Text)}
+                                    placeholder="Age"
+                                    placeholderTextColor={"#4E95FF"}>{item.age}</TextInput>
+
+                                <Text style={styles.title}>Address</Text>
+                                <TextInput style={styles.TextInput}
+                                    editable={edit} onChangeText={(Text) => setaddress(Text)}
+                                    placeholder="Address"
+                                    placeholderTextColor={"#4E95FF"}>{item.address}</TextInput>
+
+                            </View>
 
                         </View>
 
                     </View>
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={visibleModal}
 
-                </View>
-                <Modal
-                    animationType="slide"
-                    transparent={true}
-                    visible={visibleModal}
+                        onRequestClose={() => {
+                            setVisibleModal(!visibleModal)
+                            Alert.alert('Modal has been closed.');
 
-                    onRequestClose={() => {
-                        setVisibleModal(!visibleModal)
-                        Alert.alert('Modal has been closed.');
+                        }}>
+                        <View style={styles.modal}>
 
-                    }}>
-                    <View style={styles.modal}>
-
-                        <TouchableOpacity style={styles.close} onPress={() => setVisibleModal(false)}>
-                            <AntDesign name="closecircle" size={25} color={"black"} />
-                        </TouchableOpacity>
-
-                        <View style={{ flexDirection: "row", marginTop: -60 }}>
-
-                            <TouchableOpacity onPress={choosePhotoFromgallery}>
-                                <Image style={styles.gallery} source={require("../Assets/Images/gallery.png")}></Image>
+                            <TouchableOpacity style={styles.close} onPress={() => setVisibleModal(false)}>
+                                <AntDesign name="closecircle" size={25} color={"black"} />
                             </TouchableOpacity>
 
-                            <TouchableOpacity onPress={takePhotoFromCamera}>
-                                <Image style={styles.camera1} source={require("../Assets/Images/camera1.png")}></Image>
-                            </TouchableOpacity>
+                            <View style={{ flexDirection: "row", marginTop: -60 }}>
+
+                                <TouchableOpacity onPress={choosePhotoFromgallery}>
+                                    <Image style={styles.gallery} source={require("../Assets/Images/gallery.png")}></Image>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity onPress={takePhotoFromCamera}>
+                                    <Image style={styles.camera1} source={require("../Assets/Images/camera1.png")}></Image>
+                                </TouchableOpacity>
+                            </View>
+
+
                         </View>
-
-
-                    </View>
-                </Modal>
-            </View>
-
+                    </Modal>
+                </View>
+                : <ActivityIndicator size={"large"} />}
         </ScrollView>
     )
 }

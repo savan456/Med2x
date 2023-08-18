@@ -3,7 +3,7 @@ import { Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Fonts from "../Assets/Fonts/fonts";
-import Navigation from "../Navigation/Navigation";
+
 
 const Pass = (navigation) => {
 
