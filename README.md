@@ -1,10 +1,14 @@
+
 # Installtion
 ## Run for android
-1. Install node modules
+1. Clone your repository.
+   ```
+   
+3. Install node modules
    ```
    npm install
    ```
-2. Run the project
+4. Run the project
    ```
    npx react-native run-android
    ```
